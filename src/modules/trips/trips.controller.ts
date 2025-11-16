@@ -1,0 +1,18 @@
+import { Controller } from '@nestjs/common';
+import { BaseController } from '@/modules/base/base.controller';
+import { Trip } from '@/modules/trips/entities/trip.entity';
+import { CreateTripDto } from '@/modules/trips/dtos/create-trip.dto';
+import { UpdateTripDto } from '@/modules/trips/dtos/update-trip.dto';
+import { TripsService } from '@/modules/trips/trips.service';
+
+@Controller('api/v1/trips')
+export class TripsController extends BaseController<
+  Trip,
+  CreateTripDto,
+  UpdateTripDto
+> {
+  constructor(protected readonly tripsService: TripsService) {
+    super(tripsService);
+  }
+}
+
