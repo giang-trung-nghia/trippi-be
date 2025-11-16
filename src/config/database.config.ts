@@ -1,7 +1,7 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import * as dotenv from 'dotenv';
-
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 dotenv.config();
 
 export const dataSourceOptions: DataSourceOptions & TypeOrmModuleOptions = {
@@ -15,6 +15,7 @@ export const dataSourceOptions: DataSourceOptions & TypeOrmModuleOptions = {
   migrations: ['src/database/migrations/*{.ts,.js}'],
   synchronize: false,
   logging: true,
+  namingStrategy: new SnakeNamingStrategy(),
 };
 
 export const typeOrmConfig: TypeOrmModuleOptions = dataSourceOptions;

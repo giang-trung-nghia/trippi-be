@@ -1,11 +1,13 @@
-import { Controller } from '@nestjs/common';
+import { Controller, UseGuards } from '@nestjs/common';
 import { BaseController } from '@/modules/base/base.controller';
 import { Trip } from '@/modules/trips/entities/trip.entity';
 import { CreateTripDto } from '@/modules/trips/dtos/create-trip.dto';
 import { UpdateTripDto } from '@/modules/trips/dtos/update-trip.dto';
 import { TripsService } from '@/modules/trips/trips.service';
+import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 
 @Controller('api/v1/trips')
+@UseGuards(JwtAuthGuard)
 export class TripsController extends BaseController<
   Trip,
   CreateTripDto,

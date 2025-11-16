@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dtos/create-user.dto';
@@ -44,5 +44,29 @@ export class UsersService extends BaseService<
 
   private hashPassword(password: string): Promise<string> {
     return bcrypt.hash(password, 10);
+  }
+
+  async setRefreshToken(userId: string, refreshToken: string): Promise<void> {
+    await this.userRepository.update(userId, { refreshToken });
+  }
+
+  async validateRefreshToken(
+    userId: string,
+    refreshToken: string,
+  ): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user || !user.refreshToken) {
+      throw new ForbiddenException('Refresh token not found');
+    }
+    if (user.refreshToken !== refreshToken) {
+      throw new ForbiddenException('Invalid refresh token');
+    }
+    return user;
+  }
+
+  async clearRefreshToken(userId: string): Promise<void> {
+    await this.userRepository.update(userId, {
+      refreshToken: undefined,
+    });
   }
 }
