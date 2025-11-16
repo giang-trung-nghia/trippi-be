@@ -9,6 +9,9 @@ import { TripsModule } from '@/modules/trips/trips.module';
 import { ItinerariesModule } from '@/modules/itineraries/itineraries.module';
 import { GeoModule } from '@/modules/geos/geo.module';
 import { GeoTypesModule } from '@/modules/geo-types/geo-types.module';
+import { AuthProvidersModule } from '@/modules/auth-providers/auth-providers.module';
+import { GoogleAuthModule } from '@/modules/auth/google/google-auth.module';
+import { TokensModule } from '@/modules/auth/tokens/tokens.module';
 
 @Module({
   imports: [
@@ -23,6 +26,9 @@ import { GeoTypesModule } from '@/modules/geo-types/geo-types.module';
     ItinerariesModule,
     GeoModule,
     GeoTypesModule,
+    AuthProvidersModule,
+    GoogleAuthModule,
+    TokensModule,
   ],
   controllers: [AppController],
   providers: [AppService],
