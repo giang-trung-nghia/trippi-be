@@ -11,4 +11,3 @@ export class TokensController {
     return this.tokensService.rotateRefreshToken(refreshToken);
   }
 }
-

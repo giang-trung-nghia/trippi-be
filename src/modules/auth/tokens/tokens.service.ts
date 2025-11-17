@@ -29,12 +29,12 @@ export class TokensService {
 
     const accessSecret = this.configService.get<string>('JWT_ACCESS_SECRET');
     const refreshSecret = this.configService.get<string>('JWT_REFRESH_SECRET');
-    const accessExpiresIn =
-      (this.configService.get<string>('JWT_ACCESS_EXPIRES_IN') ??
-        '15m') as JwtSignOptions['expiresIn'];
-    const refreshExpiresIn =
-      (this.configService.get<string>('JWT_REFRESH_EXPIRES_IN') ??
-        '7d') as JwtSignOptions['expiresIn'];
+    const accessExpiresIn = (this.configService.get<string>(
+      'JWT_ACCESS_EXPIRES_IN',
+    ) ?? '10m') as JwtSignOptions['expiresIn'];
+    const refreshExpiresIn = (this.configService.get<string>(
+      'JWT_REFRESH_EXPIRES_IN',
+    ) ?? '1d') as JwtSignOptions['expiresIn'];
 
     if (!accessSecret || !refreshSecret) {
       throw new UnauthorizedException('JWT secrets are not configured');
@@ -85,4 +85,3 @@ export class TokensService {
     }
   }
 }
-

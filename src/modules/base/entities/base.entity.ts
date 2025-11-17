@@ -1,15 +1,13 @@
 import {
   BaseEntity as TypeOrmBaseEntity,
-  BeforeInsert,
   CreateDateColumn,
   DeleteDateColumn,
-  PrimaryColumn,
   UpdateDateColumn,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
-import { uuidv7 } from 'uuidv7';
 
 export abstract class BaseEntity extends TypeOrmBaseEntity {
-  @PrimaryColumn('uuid')
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @CreateDateColumn()
@@ -20,12 +18,4 @@ export abstract class BaseEntity extends TypeOrmBaseEntity {
 
   @DeleteDateColumn({ nullable: true })
   deletedAt?: Date | null;
-
-  @BeforeInsert()
-  protected ensureId(): void {
-    if (!this.id) {
-      this.id = uuidv7();
-    }
-  }
 }
-

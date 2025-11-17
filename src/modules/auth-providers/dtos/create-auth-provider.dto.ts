@@ -20,10 +20,13 @@ export class CreateAuthProviderDto {
 
   @IsString()
   @IsOptional()
+  photoUrl?: string;
+
+  @IsString()
+  @IsOptional()
   passwordHash?: string;
 
   @IsString()
   @IsNotEmpty()
   userId: string;
 }
-

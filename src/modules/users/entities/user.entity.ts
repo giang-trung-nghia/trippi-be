@@ -16,8 +16,11 @@ export class User extends BaseEntity {
   @Column()
   name: string;
 
-  @Column()
-  password: string;
+  @Column({ nullable: true })
+  password?: string;
+
+  @Column({ nullable: true })
+  photoUrl?: string;
 
   @Column({ nullable: true })
   refreshToken?: string;
