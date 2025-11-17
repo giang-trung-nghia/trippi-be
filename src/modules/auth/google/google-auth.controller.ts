@@ -1,4 +1,4 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { GoogleAuthGuard } from '@/common/guards/google-auth.guard';
 import { GoogleAuthService } from '@/modules/auth/google/google-auth.service';
 import { GoogleProfilePayload } from '@/modules/auth/google/interfaces/google-profile.interface';
@@ -15,14 +15,14 @@ export class GoogleAuthController {
 
   @Get('callback')
   @UseGuards(GoogleAuthGuard)
-  async googleAuthRedirect(@Req() req: { user: GoogleProfilePayload }) {
-    const { user, tokens } = await this.googleAuthService.handleGoogleLogin(
+  async googleAuthRedirect(
+    @Res() res,
+    @Req() req: { user: GoogleProfilePayload },
+  ) {
+    const redirectUrl = await this.googleAuthService.handleGoogleLogin(
       req.user,
     );
-    return {
-      message: 'Google authentication successful',
-      user,
-      tokens,
-    };
+
+    return res.redirect(redirectUrl);
   }
 }

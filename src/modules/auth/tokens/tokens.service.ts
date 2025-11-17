@@ -81,6 +81,7 @@ export class TokensService {
         secret: refreshSecret,
       });
     } catch (error) {
+      console.error(error);
       throw new UnauthorizedException('Invalid refresh token');
     }
   }

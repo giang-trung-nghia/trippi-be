@@ -7,6 +7,7 @@ import { User } from '@/modules/users/entities/user.entity';
 import { TokensService } from '@/modules/auth/tokens/tokens.service';
 import { CreateUserOauthDto } from '@/modules/users/dtos/create-user-oauth.dto';
 import { UserRole } from '@/common/enums/user-role.enum';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class GoogleAuthService {
@@ -16,9 +17,10 @@ export class GoogleAuthService {
     private readonly authProvidersService: AuthProvidersService,
     private readonly usersService: UsersService,
     private readonly tokensService: TokensService,
+    private readonly configService: ConfigService,
   ) {}
 
-  async handleGoogleLogin(profile: GoogleProfilePayload) {
+  async handleGoogleLogin(profile: GoogleProfilePayload): Promise<string> {
     const existingProvider =
       await this.authProvidersService.findByProviderAccount(
         AuthProviderEnum.GOOGLE,
@@ -29,7 +31,11 @@ export class GoogleAuthService {
       const tokens = await this.tokensService.generateTokens(
         existingProvider.user,
       );
-      return { user: existingProvider.user, tokens };
+      return (
+        this.configService.get<string>('FRONTEND_URL') +
+        '/auth/google/callback?token=' +
+        tokens.accessToken
+      );
     }
 
     const user = await this.findOrCreateUser(profile);
@@ -43,8 +49,11 @@ export class GoogleAuthService {
     });
 
     const tokens = await this.tokensService.generateTokens(user);
-
-    return { user, tokens };
+    const redirectUrl =
+      this.configService.get<string>('FRONTEND_URL') +
+      '/auth/google/callback?token=' +
+      tokens.accessToken;
+    return redirectUrl;
   }
 
   private async findOrCreateUser(profile: GoogleProfilePayload): Promise<User> {

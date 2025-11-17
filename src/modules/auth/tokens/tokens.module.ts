@@ -13,4 +13,3 @@ import { JwtStrategy } from '@/common/strategies/jwt.strategy';
   exports: [TokensService, JwtStrategy],
 })
 export class TokensModule {}
-
