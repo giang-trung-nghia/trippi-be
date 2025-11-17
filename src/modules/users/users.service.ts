@@ -1,11 +1,17 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dtos/create-user.dto';
+import { CreateUserOauthDto } from './dtos/create-user-oauth.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import * as bcrypt from 'bcrypt';
 import { User } from '@/modules/users/entities/user.entity';
 import { BaseService } from '@/modules/base/services/base.service';
+import { UserRole } from '@/common/enums/user-role.enum';
 
 @Injectable()
 export class UsersService extends BaseService<
@@ -26,6 +32,17 @@ export class UsersService extends BaseService<
       ...createDto,
       password: hashedPassword,
     });
+  }
+
+  async createOauthUser(createDto: CreateUserOauthDto): Promise<User> {
+    const user = this.userRepository.create({
+      email: createDto.email,
+      name: createDto.name,
+      role: createDto.role ?? UserRole.USER,
+      photoUrl: createDto.photoUrl ?? undefined,
+      password: undefined,
+    });
+    return this.userRepository.save(user);
   }
 
   async getUserByEmail(email: string): Promise<User> {

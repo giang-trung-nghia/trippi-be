@@ -7,4 +7,3 @@ export interface GoogleProfilePayload {
   displayName?: string;
   photo?: string;
 }
-

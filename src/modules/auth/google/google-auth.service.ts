@@ -1,12 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { randomBytes } from 'crypto';
 import { AuthProvidersService } from '@/modules/auth-providers/auth-providers.service';
 import { UsersService } from '@/modules/users/users.service';
 import { GoogleProfilePayload } from '@/modules/auth/google/interfaces/google-profile.interface';
 import { AuthProviderEnum } from '@/common/enums/auth-provider.enum';
-import { UserRole } from '@/common/enums/user-role.enum';
 import { User } from '@/modules/users/entities/user.entity';
 import { TokensService } from '@/modules/auth/tokens/tokens.service';
+import { CreateUserOauthDto } from '@/modules/users/dtos/create-user-oauth.dto';
+import { UserRole } from '@/common/enums/user-role.enum';
 
 @Injectable()
 export class GoogleAuthService {
@@ -38,6 +38,7 @@ export class GoogleAuthService {
       provider: AuthProviderEnum.GOOGLE,
       providerUserId: profile.providerUserId,
       email: profile.email,
+      photoUrl: profile.photo,
       userId: user.id,
     });
 
@@ -46,23 +47,20 @@ export class GoogleAuthService {
     return { user, tokens };
   }
 
-  private async findOrCreateUser(
-    profile: GoogleProfilePayload,
-  ): Promise<User> {
+  private async findOrCreateUser(profile: GoogleProfilePayload): Promise<User> {
     const existingUser = await this.findUserByEmail(profile.email);
     if (existingUser) {
       return existingUser;
     }
 
-    const generatedPassword = randomBytes(16).toString('hex');
-
-    const user = await this.usersService.create({
+    const oauthUser: CreateUserOauthDto = {
       email: profile.email,
       name: profile.displayName ?? profile.email,
-      password: generatedPassword,
-      confirmPassword: generatedPassword,
+      photoUrl: profile.photo,
       role: UserRole.USER,
-    });
+    };
+
+    const user = await this.usersService.createOauthUser(oauthUser);
 
     this.logger.debug(`Created new user ${user.id} from Google profile.`);
     return user;
@@ -76,4 +74,3 @@ export class GoogleAuthService {
     }
   }
 }
-

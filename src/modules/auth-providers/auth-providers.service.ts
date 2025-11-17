@@ -62,6 +62,7 @@ export class AuthProvidersService extends BaseService<
 
   private async findUser(userId: string): Promise<User> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
+    console.log(user);
     if (!user) {
       throw new NotFoundException('User not found');
     }
