@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 import { JwtModule as NestJwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
-import { TokensService } from '@/modules/auth/tokens/tokens.service';
-import { TokensController } from '@/modules/auth/tokens/tokens.controller';
 import { UsersModule } from '@/modules/users/users.module';
+import { AuthController } from '@/modules/auth/auth.controller';
+import { AuthService } from '@/modules/auth/auth.service';
 import { JwtStrategy } from '@/common/strategies/jwt.strategy';
 
 @Module({
   imports: [ConfigModule, NestJwtModule.register({}), UsersModule],
-  controllers: [TokensController],
-  providers: [TokensService, JwtStrategy],
-  exports: [TokensService, JwtStrategy],
+  controllers: [AuthController],
+  providers: [AuthService, JwtStrategy],
+  exports: [AuthService, JwtStrategy],
 })
-export class TokensModule {}
+export class AuthModule {}

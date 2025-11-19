@@ -4,10 +4,10 @@ import { UsersService } from '@/modules/users/users.service';
 import { GoogleProfilePayload } from '@/modules/auth/google/interfaces/google-profile.interface';
 import { AuthProviderEnum } from '@/common/enums/auth-provider.enum';
 import { User } from '@/modules/users/entities/user.entity';
-import { TokensService } from '@/modules/auth/tokens/tokens.service';
+import { AuthService } from '@/modules/auth/auth.service';
+import { TokensResponse } from '@/modules/auth/interfaces/tokens-response.interface';
 import { CreateUserOauthDto } from '@/modules/users/dtos/create-user-oauth.dto';
 import { UserRole } from '@/common/enums/user-role.enum';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class GoogleAuthService {
@@ -16,11 +16,12 @@ export class GoogleAuthService {
   constructor(
     private readonly authProvidersService: AuthProvidersService,
     private readonly usersService: UsersService,
-    private readonly tokensService: TokensService,
-    private readonly configService: ConfigService,
+    private readonly authService: AuthService,
   ) {}
 
-  async handleGoogleLogin(profile: GoogleProfilePayload): Promise<string> {
+  async handleGoogleLogin(
+    profile: GoogleProfilePayload,
+  ): Promise<{ user: User; tokens: TokensResponse }> {
     const existingProvider =
       await this.authProvidersService.findByProviderAccount(
         AuthProviderEnum.GOOGLE,
@@ -28,14 +29,10 @@ export class GoogleAuthService {
       );
 
     if (existingProvider?.user) {
-      const tokens = await this.tokensService.generateTokens(
+      const tokens = await this.authService.generateTokens(
         existingProvider.user,
       );
-      return (
-        this.configService.get<string>('FRONTEND_URL') +
-        '/auth/google/callback?token=' +
-        tokens.accessToken
-      );
+      return { user: existingProvider.user, tokens };
     }
 
     const user = await this.findOrCreateUser(profile);
@@ -48,12 +45,8 @@ export class GoogleAuthService {
       userId: user.id,
     });
 
-    const tokens = await this.tokensService.generateTokens(user);
-    const redirectUrl =
-      this.configService.get<string>('FRONTEND_URL') +
-      '/auth/google/callback?token=' +
-      tokens.accessToken;
-    return redirectUrl;
+    const tokens = await this.authService.generateTokens(user);
+    return { user, tokens };
   }
 
   private async findOrCreateUser(profile: GoogleProfilePayload): Promise<User> {
