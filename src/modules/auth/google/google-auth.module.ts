@@ -6,8 +6,7 @@ import { GoogleAuthService } from '@/modules/auth/google/google-auth.service';
 import { GoogleStrategy } from '@/common/strategies/google.strategy';
 import { AuthProvidersModule } from '@/modules/auth-providers/auth-providers.module';
 import { UsersModule } from '@/modules/users/users.module';
-import { TokensModule } from '@/modules/auth/tokens/tokens.module';
-import { JwtStrategy } from '@/common/strategies/jwt.strategy';
+import { AuthModule } from '@/modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -15,7 +14,7 @@ import { JwtStrategy } from '@/common/strategies/jwt.strategy';
     PassportModule.register({ defaultStrategy: 'google' }),
     AuthProvidersModule,
     UsersModule,
-    TokensModule,
+    AuthModule,
   ],
   controllers: [GoogleAuthController],
   providers: [GoogleAuthService, GoogleStrategy],

@@ -11,7 +11,7 @@ import { GeoModule } from '@/modules/geos/geo.module';
 import { GeoTypesModule } from '@/modules/geo-types/geo-types.module';
 import { AuthProvidersModule } from '@/modules/auth-providers/auth-providers.module';
 import { GoogleAuthModule } from '@/modules/auth/google/google-auth.module';
-import { TokensModule } from '@/modules/auth/tokens/tokens.module';
+import { AuthModule } from '@/modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -28,7 +28,7 @@ import { TokensModule } from '@/modules/auth/tokens/tokens.module';
     GeoTypesModule,
     AuthProvidersModule,
     GoogleAuthModule,
-    TokensModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
