@@ -1,36 +1,39 @@
-import {
-    Entity,
-    Column,
-    ManyToOne,
-    JoinColumn,
-    OneToMany,
-  } from 'typeorm';
-  import { BaseEntity } from '@/modules/base/entities/base.entity';
-import { Itinerary } from '@/modules/itineraries/entities/itinerary.entity';
+import { Entity, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { BaseEntity } from '@/modules/base/entities/base.entity';
 import { User } from '@/modules/users/entities/user.entity';
-  
-  @Entity('trips')
-  export class Trip extends BaseEntity {
-    @Column()
-    name: string;
+import { TripMember } from '@/modules/trip-members/entities/trip-member.entity';
+import { TripDay } from '@/modules/trip-days/entities/trip-day.entity';
 
-    @Column()
-    budget: number;
+@Entity('trips')
+export class Trip extends BaseEntity {
+  @Column()
+  name: string;
 
-    @Column()
-    startDate: Date;
+  @Column()
+  budget: number;
 
-    @Column()
-    endDate: Date;
+  @Column()
+  startDate: Date;
 
-    @Column()
-    description: string;
+  @Column()
+  endDate: Date;
 
-    @ManyToOne(() => User, (user) => user.trips)
-    @JoinColumn({ name: 'user_id' })
-    user: User;
-    
-    @OneToMany(() => Itinerary, (itinerary) => itinerary.trip)
-    itineraries: Itinerary[];
-  }
-  
+  @Column()
+  description: string;
+
+  @Column({ default: false })
+  isPublic: boolean;
+
+  @Column({ nullable: true })
+  coverImageUrl?: string;
+
+  @ManyToOne(() => User, (user) => user.trips)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+
+  @OneToMany(() => TripMember, (tripMember) => tripMember.trip)
+  members: TripMember[];
+
+  @OneToMany(() => TripDay, (tripDay) => tripDay.trip)
+  days: TripDay[];
+}

@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsInt, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 
 export class UpdateGeoDto {
   @IsString()
@@ -31,5 +31,16 @@ export class UpdateGeoDto {
   @IsString()
   @IsOptional()
   parentId?: string;
-}
 
+  @Type(() => Number)
+  @IsInt()
+  @IsOptional()
+  @Min(0)
+  minDurationMinutes?: number;
+
+  @Type(() => Number)
+  @IsInt()
+  @IsOptional()
+  @Min(0)
+  maxDurationMinutes?: number;
+}

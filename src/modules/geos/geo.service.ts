@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BaseService } from '@/modules/base/services/base.service';
@@ -20,6 +24,10 @@ export class GeoService extends BaseService<Geo, CreateGeoDto, UpdateGeoDto> {
 
   async create(createDto: CreateGeoDto): Promise<Geo> {
     const { parentId, geoTypeId, ...rest } = createDto;
+    this.ensureValidDurationRange(
+      createDto.minDurationMinutes,
+      createDto.maxDurationMinutes,
+    );
 
     const geo = this.geoRepository.create({
       ...rest,
@@ -32,6 +40,10 @@ export class GeoService extends BaseService<Geo, CreateGeoDto, UpdateGeoDto> {
 
   async update(id: string, updateDto: UpdateGeoDto): Promise<Geo> {
     const { parentId, geoTypeId, ...rest } = updateDto;
+    this.ensureValidDurationRange(
+      updateDto.minDurationMinutes,
+      updateDto.maxDurationMinutes,
+    );
     const payload: Partial<Geo> = { ...rest };
 
     if (parentId !== undefined) {
@@ -42,12 +54,18 @@ export class GeoService extends BaseService<Geo, CreateGeoDto, UpdateGeoDto> {
       payload.type = await this.findGeoType(geoTypeId);
     }
 
-    await this.geoRepository.update(id, payload);
+    const entityToSave: Partial<Geo> = {
+      ...(payload as Geo),
+      id,
+    };
+    await this.geoRepository.save(entityToSave);
     return this.findOne(id);
   }
 
   private async findParent(parentId: string): Promise<Geo> {
-    const parent = await this.geoRepository.findOne({ where: { id: parentId } });
+    const parent = await this.geoRepository.findOne({
+      where: { id: parentId },
+    });
     if (!parent) {
       throw new NotFoundException('Parent geo not found');
     }
@@ -63,5 +81,12 @@ export class GeoService extends BaseService<Geo, CreateGeoDto, UpdateGeoDto> {
     }
     return geoType;
   }
-}
 
+  private ensureValidDurationRange(min?: number, max?: number): void {
+    if (min !== undefined && max !== undefined && max < min) {
+      throw new BadRequestException(
+        'maxDurationMinutes must be greater than or equal to minDurationMinutes.',
+      );
+    }
+  }
+}

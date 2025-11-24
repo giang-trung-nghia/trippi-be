@@ -7,6 +7,7 @@ import { UserRole } from '@/common/enums/user-role.enum';
 import { Trip } from '@/modules/trips/entities/trip.entity';
 import { BaseEntity } from '@/modules/base/entities/base.entity';
 import { AuthProvider } from '@/modules/auth-providers/entities/auth-provider.entity';
+import { TripMember } from '@/modules/trip-members/entities/trip-member.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -33,4 +34,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => AuthProvider, (authProvider) => authProvider.user)
   authProviders: AuthProvider[];
+
+  @OneToMany(() => TripMember, (tripMember) => tripMember.user)
+  tripMembers: TripMember[];
 }
