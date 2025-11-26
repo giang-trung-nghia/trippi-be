@@ -10,7 +10,7 @@ import { CreateUserOauthDto } from './dtos/create-user-oauth.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import * as bcrypt from 'bcrypt';
 import { User } from '@/modules/users/entities/user.entity';
-import { BaseService } from '@/modules/base/services/base.service';
+import { BaseService } from '@/modules/base/base.service';
 import { UserRole } from '@/common/enums/user-role.enum';
 
 @Injectable()

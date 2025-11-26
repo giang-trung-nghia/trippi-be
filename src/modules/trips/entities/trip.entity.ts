@@ -9,8 +9,8 @@ export class Trip extends BaseEntity {
   @Column()
   name: string;
 
-  @Column()
-  budget: number;
+  @Column({ type: 'float', nullable: true })
+  budget?: number;
 
   @Column()
   startDate: Date;

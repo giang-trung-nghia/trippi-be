@@ -14,7 +14,8 @@ export class CreateTripDto {
 
   @Type(() => Number)
   @IsNumber()
-  budget: number;
+  @IsOptional()
+  budget?: number;
 
   @IsDateString()
   startDate: string;
@@ -30,4 +31,3 @@ export class CreateTripDto {
   @IsNotEmpty()
   userId: string;
 }
-

@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { TripItem } from '@/modules/trip-items/entities/trip-item.entity';
 import { CreateTripItemDto } from '@/modules/trip-items/dtos/create-trip-item.dto';
 import { UpdateTripItemDto } from '@/modules/trip-items/dtos/update-trip-item.dto';
-import { BaseService } from '@/modules/base/services/base.service';
+import { BaseService } from '@/modules/base/base.service';
 import { TripDay } from '@/modules/trip-days/entities/trip-day.entity';
 import { Geo } from '@/modules/geos/entities/geo.entity';
 

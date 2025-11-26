@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BaseService } from '@/modules/base/services/base.service';
+import { BaseService } from '@/modules/base/base.service';
 import { Geo } from '@/modules/geos/entities/geo.entity';
 import { CreateGeoDto } from '@/modules/geos/dtos/create-geo.dto';
 import { UpdateGeoDto } from '@/modules/geos/dtos/update-geo.dto';

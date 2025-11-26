@@ -4,7 +4,7 @@ import { DeepPartial, Repository } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { GeoPhoto } from '@/modules/geo-photos/entities/geo-photo.entity';
 import { Geo } from '@/modules/geos/entities/geo.entity';
-import { BaseService } from '@/modules/base/services/base.service';
+import { BaseService } from '@/modules/base/base.service';
 import { CreateGeoPhotoDto } from '@/modules/geo-photos/dtos/create-geo-photo.dto';
 import { UpdateGeoPhotoDto } from '@/modules/geo-photos/dtos/update-geo-photo.dto';
 

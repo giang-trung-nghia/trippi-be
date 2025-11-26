@@ -5,7 +5,7 @@ import { TripDay } from '@/modules/trip-days/entities/trip-day.entity';
 import { Trip } from '@/modules/trips/entities/trip.entity';
 import { CreateTripDayDto } from '@/modules/trip-days/dtos/create-trip-day.dto';
 import { UpdateTripDayDto } from '@/modules/trip-days/dtos/update-trip-day.dto';
-import { BaseService } from '@/modules/base/services/base.service';
+import { BaseService } from '@/modules/base/base.service';
 
 @Injectable()
 export class TripDaysService extends BaseService<

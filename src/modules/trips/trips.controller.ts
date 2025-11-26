@@ -17,4 +17,3 @@ export class TripsController extends BaseController<
     super(tripsService);
   }
 }
-

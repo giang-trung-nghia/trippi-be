@@ -9,9 +9,11 @@ import {
   Patch,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { DeepPartial, ObjectLiteral } from 'typeorm';
-import { BaseService } from '@/modules/base/services/base.service';
+import { BaseService } from '@/modules/base/base.service';
+import { PagedResult } from '@/modules/base/interfaces/base-service.interfaces';
 
 export abstract class BaseController<
   Entity extends ObjectLiteral,
@@ -25,6 +27,19 @@ export abstract class BaseController<
   @Get()
   findAll(): Promise<Entity[]> {
     return this.service.findAll();
+  }
+
+  @Get('paged')
+  findPaged(
+    @Query('page') page = '1',
+    @Query('limit') limit = '25',
+  ): Promise<PagedResult<Entity>> {
+    const parsedPage = Number(page);
+    const parsedLimit = Number(limit);
+    return this.service.findPaged({
+      page: Number.isNaN(parsedPage) ? undefined : parsedPage,
+      limit: Number.isNaN(parsedLimit) ? undefined : parsedLimit,
+    });
   }
 
   @Get(':id')
@@ -83,4 +98,3 @@ export abstract class BaseController<
     return this.service.restore(id);
   }
 }
-

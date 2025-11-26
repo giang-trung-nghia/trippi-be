@@ -14,7 +14,7 @@ export const dataSourceOptions: DataSourceOptions & TypeOrmModuleOptions = {
   entities: ['src/modules/**/entities/*.entity{.ts,.js}'],
   migrations: ['src/database/migrations/*{.ts,.js}'],
   synchronize: false,
-  logging: true,
+  logging: ['error', 'warn'], // Log only error and warn queries to the console
   namingStrategy: new SnakeNamingStrategy(),
 };
 

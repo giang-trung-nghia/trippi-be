@@ -12,4 +12,3 @@ import { User } from '@/modules/users/entities/user.entity';
   exports: [TripsService],
 })
 export class TripsModule {}
-

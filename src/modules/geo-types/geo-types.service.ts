@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BaseService } from '@/modules/base/services/base.service';
+import { BaseService } from '@/modules/base/base.service';
 import { GeoType } from '@/modules/geo-types/entities/geo-type.entity';
 import { CreateGeoTypeDto } from '@/modules/geo-types/dtos/create-geo-type.dto';
 import { UpdateGeoTypeDto } from '@/modules/geo-types/dtos/update-geo-type.dto';
@@ -23,10 +23,7 @@ export class GeoTypesService extends BaseService<
     return super.create(this.normalizeDto(createDto));
   }
 
-  async update(
-    id: string,
-    updateDto: UpdateGeoTypeDto,
-  ): Promise<GeoType> {
+  async update(id: string, updateDto: UpdateGeoTypeDto): Promise<GeoType> {
     return super.update(id, this.normalizeDto(updateDto));
   }
 
@@ -39,4 +36,3 @@ export class GeoTypesService extends BaseService<
     return dto;
   }
 }
-

@@ -6,7 +6,7 @@ import { CreateTripMemberDto } from '@/modules/trip-members/dtos/create-trip-mem
 import { UpdateTripMemberDto } from '@/modules/trip-members/dtos/update-trip-member.dto';
 import { Trip } from '@/modules/trips/entities/trip.entity';
 import { User } from '@/modules/users/entities/user.entity';
-import { BaseService } from '@/modules/base/services/base.service';
+import { BaseService } from '@/modules/base/base.service';
 
 @Injectable()
 export class TripMembersService extends BaseService<

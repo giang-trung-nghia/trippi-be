@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BaseService } from '@/modules/base/services/base.service';
+import { BaseService } from '@/modules/base/base.service';
 import { AuthProvider } from '@/modules/auth-providers/entities/auth-provider.entity';
 import { CreateAuthProviderDto } from '@/modules/auth-providers/dtos/create-auth-provider.dto';
 import { UpdateAuthProviderDto } from '@/modules/auth-providers/dtos/update-auth-provider.dto';

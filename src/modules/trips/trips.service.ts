@@ -5,7 +5,7 @@ import { Trip } from '@/modules/trips/entities/trip.entity';
 import { CreateTripDto } from '@/modules/trips/dtos/create-trip.dto';
 import { UpdateTripDto } from '@/modules/trips/dtos/update-trip.dto';
 import { User } from '@/modules/users/entities/user.entity';
-import { BaseService } from '@/modules/base/services/base.service';
+import { BaseService } from '@/modules/base/base.service';
 
 @Injectable()
 export class TripsService extends BaseService<
@@ -24,7 +24,7 @@ export class TripsService extends BaseService<
 
   async create(createDto: CreateTripDto): Promise<Trip> {
     const user = await this.findUser(createDto.userId);
-    const { userId, ...rest } = createDto;
+    const { ...rest } = createDto;
     return super.create({
       ...rest,
       user,
@@ -59,4 +59,3 @@ export class TripsService extends BaseService<
     return user;
   }
 }
-

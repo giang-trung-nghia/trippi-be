@@ -6,8 +6,14 @@ import {
   ObjectLiteral,
   Repository,
   UpdateResult,
+  FindOptionsOrder,
+  FindManyOptions,
 } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
+import {
+  FindPagedOptions,
+  PagedResult,
+} from '@/modules/base/interfaces/base-service.interfaces';
 
 export abstract class BaseService<
   Entity extends ObjectLiteral,
@@ -18,6 +24,12 @@ export abstract class BaseService<
     protected readonly repository: Repository<Entity>,
     private readonly entityDisplayName?: string,
   ) {}
+
+  protected get defaultOrder(): FindOptionsOrder<Entity> {
+    return {
+      updatedAt: 'DESC',
+    } as unknown as FindOptionsOrder<Entity>;
+  }
 
   protected get entityName(): string {
     return (
@@ -49,11 +61,36 @@ export abstract class BaseService<
   }
 
   findAll(): Promise<Entity[]> {
-    return this.repository.find();
+    return this.repository.find({ order: this.defaultOrder });
   }
 
   findOne(id: string): Promise<Entity> {
     return this.findByIdOrFail(id);
+  }
+
+  async findPaged(
+    options: FindPagedOptions<Entity> = {},
+  ): Promise<PagedResult<Entity>> {
+    const page = Math.max(1, options.page ?? 1);
+    const limit = Math.max(1, Math.min(options.limit ?? 25, 100));
+
+    const findOptions: FindManyOptions<Entity> = {
+      where: options.where,
+      relations: options.relations,
+      order: options.order ?? this.defaultOrder,
+      skip: (page - 1) * limit,
+      take: limit,
+    };
+
+    const [data, total] = await this.repository.findAndCount(findOptions);
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages: total === 0 ? 0 : Math.ceil(total / limit),
+    };
   }
 
   async create(createDto: CreateDto): Promise<Entity> {
@@ -90,4 +127,3 @@ export abstract class BaseService<
     this.ensureAffected(result);
   }
 }
-
