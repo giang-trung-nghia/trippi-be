@@ -89,4 +89,5 @@ export class GeoService extends BaseService<Geo, CreateGeoDto, UpdateGeoDto> {
       );
     }
   }
+
 }

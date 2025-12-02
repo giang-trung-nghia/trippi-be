@@ -7,10 +7,5 @@ export class CreateGeoTypeDto {
 
   @IsString()
   @IsNotEmpty()
-  displayNameEn: string;
-
-  @IsString()
-  @IsNotEmpty()
-  displayNameVn: string;
+  name: string;
 }
-

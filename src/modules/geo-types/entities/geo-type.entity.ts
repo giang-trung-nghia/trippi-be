@@ -8,10 +8,7 @@ export class GeoType extends BaseEntity {
   googleType: string;
 
   @Column()
-  displayNameEn: string;
-
-  @Column()
-  displayNameVn: string;
+  name: string;
 
   @OneToMany(() => Geo, (geo) => geo.type)
   geos: Geo[];

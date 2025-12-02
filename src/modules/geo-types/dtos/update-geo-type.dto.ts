@@ -7,10 +7,5 @@ export class UpdateGeoTypeDto {
 
   @IsString()
   @IsOptional()
-  displayNameEn?: string;
-
-  @IsString()
-  @IsOptional()
-  displayNameVn?: string;
+  name?: string;
 }
-

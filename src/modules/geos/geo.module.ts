@@ -12,4 +12,3 @@ import { GeoType } from '@/modules/geo-types/entities/geo-type.entity';
   exports: [GeoService],
 })
 export class GeoModule {}
-
