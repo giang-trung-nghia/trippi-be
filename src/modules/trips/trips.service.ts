@@ -149,6 +149,7 @@ export class TripsService extends BaseService<
       startDate: trip.startDate.toISOString().split('T')[0],
       endDate: trip.endDate.toISOString().split('T')[0],
       status: trip.status,
+      budget: trip.budget ?? 0,
       members: trip.members ?? [],
       days: trip.days ?? [],
       totalEstimatedCost,

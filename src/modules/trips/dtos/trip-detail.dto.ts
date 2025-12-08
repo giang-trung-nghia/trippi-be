@@ -11,6 +11,7 @@ export class TripDetailDto {
   startDate: string;
   endDate: string;
   status: TripStatus;
+  budget: number;
   members: TripMember[];
   days: TripDay[];
   totalEstimatedCost: number;
