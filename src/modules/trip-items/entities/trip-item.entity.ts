@@ -7,6 +7,9 @@ import { TripItemType } from '@/common/enums/trip-item-type.enum';
 @Entity('trip_items')
 @Unique(['tripDay', 'orderIndex'])
 export class TripItem extends BaseEntity {
+  @Column({ nullable: true })
+  customName?: string;
+
   @Column({ type: 'enum', enum: TripItemType })
   type: TripItemType;
 
@@ -21,6 +24,9 @@ export class TripItem extends BaseEntity {
 
   @Column({ type: 'float', nullable: true })
   cost?: number;
+
+  @Column({ type: 'float', nullable: true })
+  estimatedCost?: number;
 
   @Column({ type: 'text', nullable: true })
   note?: string;

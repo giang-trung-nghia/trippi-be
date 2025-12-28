@@ -1,5 +1,12 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import {
+  IsDate,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 
 export class UpdateGeoDto {
   @IsString()
@@ -43,4 +50,18 @@ export class UpdateGeoDto {
   @IsOptional()
   @Min(0)
   maxDurationMinutes?: number;
+
+  @Type(() => Number)
+  @IsNumber()
+  @IsOptional()
+  @Min(0)
+  estimatedCost?: number;
+
+  @IsDate()
+  @IsOptional()
+  standardOpeningHours?: Date;
+
+  @IsDate()
+  @IsOptional()
+  standardClosingHours?: Date;
 }

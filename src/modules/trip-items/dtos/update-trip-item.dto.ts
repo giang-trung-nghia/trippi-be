@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import {
   IsEnum,
   IsInt,
+  IsNotEmpty,
   IsNumber,
   IsObject,
   IsOptional,
@@ -40,7 +41,7 @@ export class UpdateTripItemDto {
   @IsInt()
   @IsOptional()
   @Min(0)
-  estimatedDurationMinutes?: number;
+  durationMinutes?: number;
 
   @Type(() => Number)
   @IsInt()
@@ -52,6 +53,14 @@ export class UpdateTripItemDto {
   tripDayId?: string;
 
   @IsString()
-  @IsOptional()
-  geoId?: string;
+  @IsNotEmpty()
+  googlePlaceId: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  lat: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  lng: number;
 }

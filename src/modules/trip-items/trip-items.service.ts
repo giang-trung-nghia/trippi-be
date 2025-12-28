@@ -7,6 +7,7 @@ import { UpdateTripItemDto } from '@/modules/trip-items/dtos/update-trip-item.dt
 import { BaseService } from '@/modules/base/base.service';
 import { TripDay } from '@/modules/trip-days/entities/trip-day.entity';
 import { Geo } from '@/modules/geos/entities/geo.entity';
+import { GeoType } from '@/modules/geo-types/entities/geo-type.entity';
 
 @Injectable()
 export class TripItemsService extends BaseService<
@@ -21,14 +22,21 @@ export class TripItemsService extends BaseService<
     private readonly tripDayRepository: Repository<TripDay>,
     @InjectRepository(Geo)
     private readonly geoRepository: Repository<Geo>,
+    @InjectRepository(GeoType)
+    private readonly geoTypeRepository: Repository<GeoType>,
   ) {
     super(tripItemRepository, 'TripItem');
   }
 
   async create(createDto: CreateTripItemDto): Promise<TripItem> {
     const tripDay = await this.findTripDay(createDto.tripDayId);
-    const geo = createDto.geoId
-      ? await this.findGeo(createDto.geoId)
+    const geo = createDto.googlePlaceId
+      ? await this.findOrCreateGeoByGooglePlaceId(
+          createDto.googlePlaceId,
+          createDto.lat,
+          createDto.lng,
+          createDto.snapshot,
+        )
       : undefined;
     const { ...rest } = createDto;
     return super.create({
@@ -43,10 +51,15 @@ export class TripItemsService extends BaseService<
     if (updateDto.tripDayId) {
       payload.tripDay = await this.findTripDay(updateDto.tripDayId);
     }
-    if (updateDto.geoId) {
-      payload.geo = await this.findGeo(updateDto.geoId);
+    if (updateDto.googlePlaceId) {
+      payload.geo = await this.findOrCreateGeoByGooglePlaceId(
+        updateDto.googlePlaceId,
+        updateDto.lat,
+        updateDto.lng,
+        updateDto.snapshot,
+      );
     }
-    return super.update(id, payload as UpdateTripItemDto);
+    return super.update(id, updateDto);
   }
 
   private async findTripDay(id: string): Promise<TripDay> {
@@ -57,11 +70,44 @@ export class TripItemsService extends BaseService<
     return tripDay;
   }
 
-  private async findGeo(id: string): Promise<Geo> {
-    const geo = await this.geoRepository.findOne({ where: { id } });
+  private async findOrCreateGeoByGooglePlaceId(
+    googlePlaceId: string,
+    lat: number,
+    lng: number,
+    snapshot?: Record<string, unknown>,
+  ): Promise<Geo> {
+    let geo = await this.geoRepository.findOne({ where: { googlePlaceId } });
+
     if (!geo) {
-      throw new NotFoundException('Geo not found');
+      // Get or create "unknown" geo type for places not yet categorized
+      let unknownType = await this.geoTypeRepository.findOne({
+        where: { googleType: 'unknown' },
+      });
+
+      if (!unknownType) {
+        unknownType = this.geoTypeRepository.create({
+          googleType: 'unknown',
+          name: 'Unknown',
+        });
+        unknownType = await this.geoTypeRepository.save(unknownType);
+      }
+
+      // Create a new Geo with data from snapshot or placeholder values
+      geo = this.geoRepository.create({
+        googlePlaceId,
+        name: (snapshot?.name as string) || googlePlaceId,
+        address: (snapshot?.address as string) || undefined,
+        lat,
+        lng,
+        rating: snapshot?.rating as number,
+        phone: (snapshot?.phone as string) || undefined,
+        website: (snapshot?.website as string) || undefined,
+        type: unknownType,
+      });
+
+      geo = await this.geoRepository.save(geo);
     }
+
     return geo;
   }
 }

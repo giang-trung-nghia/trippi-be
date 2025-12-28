@@ -35,6 +35,9 @@ export class Geo extends BaseEntity {
   website?: string;
 
   @Column({ nullable: true })
+  estimatedCost?: number; // The estimated cost of the geo for 1 person
+
+  @Column({ nullable: true })
   standardOpeningHours?: Date; // The standard opening hours of the geo
 
   @Column({ nullable: true })

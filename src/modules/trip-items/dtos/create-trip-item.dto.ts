@@ -12,6 +12,10 @@ import {
 import { TripItemType } from '@/common/enums/trip-item-type.enum';
 
 export class CreateTripItemDto {
+  @IsOptional()
+  @IsString()
+  customName?: string;
+
   @IsEnum(TripItemType)
   type: TripItemType;
 
@@ -50,6 +54,14 @@ export class CreateTripItemDto {
   tripDayId: string;
 
   @IsString()
-  @IsOptional()
-  geoId?: string;
+  @IsNotEmpty()
+  googlePlaceId: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  lat: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  lng: number;
 }

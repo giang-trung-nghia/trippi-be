@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsString,
   Min,
+  IsDate,
 } from 'class-validator';
 
 export class CreateGeoDto {
@@ -48,4 +49,18 @@ export class CreateGeoDto {
   @IsOptional()
   @Min(0)
   maxDurationMinutes?: number;
+
+  @Type(() => Number)
+  @IsNumber()
+  @IsOptional()
+  @Min(0)
+  estimatedCost?: number;
+
+  @IsDate()
+  @IsOptional()
+  standardOpeningHours?: Date;
+
+  @IsDate()
+  @IsOptional()
+  standardClosingHours?: Date;
 }

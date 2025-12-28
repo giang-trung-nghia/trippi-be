@@ -1,6 +1,6 @@
 import { TripStatus } from '@/common/enums/trip-status.enum';
 import { TripMember } from '@/modules/trip-members/entities/trip-member.entity';
-import { TripDay } from '@/modules/trip-days/entities/trip-day.entity';
+import { TripDayDetailDto } from '../../trip-days/dtos/trip-day-detail.dto';
 
 export class TripDetailDto {
   id: string;
@@ -13,7 +13,7 @@ export class TripDetailDto {
   status: TripStatus;
   budget: number;
   members: TripMember[];
-  days: TripDay[];
+  days: TripDayDetailDto[];
   totalEstimatedCost: number;
   totalActualCost: number;
   totalDays: number;

@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+  IsBoolean,
   IsDateString,
   IsEnum,
   IsNumber,
@@ -37,4 +38,9 @@ export class UpdateTripDto {
   @IsEnum(TripStatus)
   @IsOptional()
   status?: TripStatus;
+
+  @Type(() => Boolean)
+  @IsBoolean()
+  @IsOptional()
+  moveItemsFromDeletedDays?: boolean; // If true, move items from deleted days to the end of the last remaining day
 }
