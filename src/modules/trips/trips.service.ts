@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as ExcelJS from 'exceljs';
 import { Trip } from '@/modules/trips/entities/trip.entity';
 import { CreateTripDto } from '@/modules/trips/dtos/create-trip.dto';
 import { UpdateTripDto } from '@/modules/trips/dtos/update-trip.dto';
@@ -334,6 +335,405 @@ export class TripsService extends BaseService<
       updatedAt: trip.updatedAt.toISOString(),
       deletedAt: trip.deletedAt ? trip.deletedAt.toISOString() : null,
     };
+  }
+
+  async exportTripToCsv(id: string): Promise<string> {
+    const trip = await this.findDetail(id);
+
+    const csvLines: string[] = [];
+
+    // ===== SECTION 1: TRIP OVERVIEW =====
+    csvLines.push('TRIP OVERVIEW');
+
+    const overviewHeaders = [
+      'Trip Name',
+      'Description',
+      'Start Date',
+      'End Date',
+      'Total Days',
+      'Budget',
+      'Total Estimated Cost',
+      'Total Actual Cost',
+    ];
+    csvLines.push(overviewHeaders.join(','));
+
+    const overviewRow = [
+      this.escapeCsvField(trip.name),
+      this.escapeCsvField(trip.description ?? ''),
+      trip.startDate,
+      trip.endDate,
+      trip.totalDays.toString(),
+      trip.budget?.toString() ?? '0',
+      trip.totalEstimatedCost?.toString() ?? '0',
+      trip.totalActualCost?.toString() ?? '0',
+    ];
+    csvLines.push(overviewRow.join(','));
+
+    // Empty lines separator
+    csvLines.push('');
+
+    // ===== SECTION 2: TRIP DETAILS (DAY BY DAY) =====
+    csvLines.push('TRIP DETAILS');
+
+    const detailHeaders = [
+      'Day',
+      'Date',
+      'Day Note',
+      'Item #',
+      'Type',
+      'Place/Activity Name',
+      'Address',
+      'Start Time',
+      'End Time',
+      'Duration (min)',
+      'Cost',
+      'Estimated Cost',
+      'Phone',
+      'Item Note',
+    ];
+    csvLines.push(detailHeaders.join(','));
+
+    // Add detail rows
+    trip.days.forEach((day) => {
+      if (!day.items || day.items.length === 0) {
+        // Add empty day row
+        csvLines.push(
+          [
+            (day.dayIndex + 1).toString(),
+            day.date,
+            this.escapeCsvField(day.note ?? ''),
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+          ].join(','),
+        );
+      } else {
+        day.items.forEach((item, index) => {
+          csvLines.push(
+            [
+              index === 0 ? day.dayIndex.toString() : '', // Show day number only on first item
+              index === 0 ? day.date : '', // Show date only on first item
+              index === 0 ? this.escapeCsvField(day.note ?? '') : '', // Show day note only on first item
+              (item.orderIndex + 1).toString(),
+              item.type,
+              this.escapeCsvField(item.name),
+              this.escapeCsvField(item.address ?? ''),
+              item.startTime ?? '',
+              item.endTime ?? '',
+              item.durationMinutes?.toString() ?? '',
+              item.cost?.toString() ?? '',
+              item.estimatedCost?.toString() ?? '',
+              this.escapeCsvField(item.phone ?? ''),
+              this.escapeCsvField(item.note ?? ''),
+            ].join(','),
+          );
+        });
+      }
+    });
+
+    return csvLines.join('\n');
+  }
+
+  async exportTripToExcel(id: string): Promise<Buffer> {
+    const trip = await this.findDetail(id);
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Trip Details');
+
+    // Define colors - Light, friendly colors
+    const COLORS = {
+      sectionHeader: 'FF4A90E2', // Soft blue
+      overviewHeader: 'FFE8F4F8', // Very light blue
+      detailHeader: 'FFF5E6D3', // Light peach
+      oddDay: 'FFF0F8FF', // Alice blue (very light)
+      evenDay: 'FFFFF8E1', // Light amber
+      border: 'FFB0BEC5', // Light gray-blue
+    };
+
+    let currentRow = 1;
+
+    // ===== SECTION 1: TRIP OVERVIEW =====
+    // Section header
+    const overviewSectionCell = worksheet.getCell(`A${currentRow}`);
+    overviewSectionCell.value = 'TRIP OVERVIEW';
+    overviewSectionCell.font = {
+      bold: true,
+      size: 14,
+      color: { argb: 'FFFFFFFF' },
+    };
+    overviewSectionCell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: COLORS.sectionHeader },
+    };
+    overviewSectionCell.alignment = {
+      vertical: 'middle',
+      horizontal: 'center',
+    };
+    worksheet.mergeCells(`A${currentRow}:H${currentRow}`);
+    currentRow++;
+
+    // Overview headers
+    const overviewHeaders = [
+      'Trip Name',
+      'Description',
+      'Start Date',
+      'End Date',
+      'Total Days',
+      'Budget',
+      'Total Estimated Cost',
+      'Total Actual Cost',
+    ];
+
+    const overviewHeaderRow = worksheet.getRow(currentRow);
+    overviewHeaders.forEach((header, index) => {
+      const cell = overviewHeaderRow.getCell(index + 1);
+      cell.value = header;
+      cell.font = { bold: true };
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: COLORS.overviewHeader },
+      };
+      cell.border = {
+        top: { style: 'thin', color: { argb: COLORS.border } },
+        left: { style: 'thin', color: { argb: COLORS.border } },
+        bottom: { style: 'thin', color: { argb: COLORS.border } },
+        right: { style: 'thin', color: { argb: COLORS.border } },
+      };
+      cell.alignment = { vertical: 'middle', horizontal: 'center' };
+    });
+    currentRow++;
+
+    // Overview data
+    const overviewData = [
+      trip.name,
+      trip.description ?? '',
+      trip.startDate,
+      trip.endDate,
+      trip.totalDays,
+      trip.budget ?? 0,
+      trip.totalEstimatedCost ?? 0,
+      trip.totalActualCost ?? 0,
+    ];
+
+    const overviewDataRow = worksheet.getRow(currentRow);
+    overviewData.forEach((data, index) => {
+      const cell = overviewDataRow.getCell(index + 1);
+      cell.value = data;
+      cell.border = {
+        top: { style: 'thin', color: { argb: COLORS.border } },
+        left: { style: 'thin', color: { argb: COLORS.border } },
+        bottom: { style: 'thin', color: { argb: COLORS.border } },
+        right: { style: 'thin', color: { argb: COLORS.border } },
+      };
+      cell.alignment = { vertical: 'middle', wrapText: true };
+    });
+    currentRow += 2; // Empty row
+
+    // ===== SECTION 2: TRIP DETAILS =====
+    // Section header
+    const detailSectionCell = worksheet.getCell(`A${currentRow}`);
+    detailSectionCell.value = 'TRIP DETAILS';
+    detailSectionCell.font = {
+      bold: true,
+      size: 14,
+      color: { argb: 'FFFFFFFF' },
+    };
+    detailSectionCell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: COLORS.sectionHeader },
+    };
+    detailSectionCell.alignment = {
+      vertical: 'middle',
+      horizontal: 'center',
+    };
+    worksheet.mergeCells(`A${currentRow}:N${currentRow}`);
+    currentRow++;
+
+    // Detail headers
+    const detailHeaders = [
+      'Day',
+      'Date',
+      'Day Note',
+      'Item #',
+      'Type',
+      'Place/Activity Name',
+      'Address',
+      'Start Time',
+      'End Time',
+      'Duration (min)',
+      'Cost',
+      'Estimated Cost',
+      'Phone',
+      'Item Note',
+    ];
+
+    const detailHeaderRow = worksheet.getRow(currentRow);
+    detailHeaders.forEach((header, index) => {
+      const cell = detailHeaderRow.getCell(index + 1);
+      cell.value = header;
+      cell.font = { bold: true };
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: COLORS.detailHeader },
+      };
+      cell.border = {
+        top: { style: 'thin', color: { argb: COLORS.border } },
+        left: { style: 'thin', color: { argb: COLORS.border } },
+        bottom: { style: 'thin', color: { argb: COLORS.border } },
+        right: { style: 'thin', color: { argb: COLORS.border } },
+      };
+      cell.alignment = {
+        vertical: 'middle',
+        horizontal: 'center',
+        wrapText: true,
+      };
+    });
+    currentRow++;
+
+    // Detail rows with alternating colors per day
+    trip.days.forEach((day, dayIdx) => {
+      const dayColor = dayIdx % 2 === 0 ? COLORS.oddDay : COLORS.evenDay;
+      const dayStartRow = currentRow;
+
+      if (!day.items || day.items.length === 0) {
+        // Empty day
+        const row = worksheet.getRow(currentRow);
+        [
+          day.dayIndex,
+          day.date,
+          day.note ?? '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+        ].forEach((value, index) => {
+          const cell = row.getCell(index + 1);
+          cell.value = value;
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: dayColor },
+          };
+          cell.border = {
+            top: { style: 'thin', color: { argb: COLORS.border } },
+            left: { style: 'thin', color: { argb: COLORS.border } },
+            bottom: { style: 'thin', color: { argb: COLORS.border } },
+            right: { style: 'thin', color: { argb: COLORS.border } },
+          };
+          cell.alignment = { vertical: 'middle', wrapText: true };
+        });
+        currentRow++;
+      } else {
+        // Day with items
+        day.items.forEach((item, itemIdx) => {
+          const row = worksheet.getRow(currentRow);
+          const rowData = [
+            itemIdx === 0 ? day.dayIndex : '',
+            itemIdx === 0 ? day.date : '',
+            itemIdx === 0 ? (day.note ?? '') : '',
+            item.orderIndex + 1,
+            item.type,
+            item.name,
+            item.address ?? '',
+            item.startTime ?? '',
+            item.endTime ?? '',
+            item.durationMinutes ?? '',
+            item.cost ?? '',
+            item.estimatedCost ?? '',
+            item.phone ?? '',
+            item.note ?? '',
+          ];
+
+          rowData.forEach((value, index) => {
+            const cell = row.getCell(index + 1);
+            cell.value = value;
+            cell.fill = {
+              type: 'pattern',
+              pattern: 'solid',
+              fgColor: { argb: dayColor },
+            };
+            cell.border = {
+              top: { style: 'thin', color: { argb: COLORS.border } },
+              left: { style: 'thin', color: { argb: COLORS.border } },
+              bottom: { style: 'thin', color: { argb: COLORS.border } },
+              right: { style: 'thin', color: { argb: COLORS.border } },
+            };
+            cell.alignment = { vertical: 'middle', wrapText: true };
+          });
+          currentRow++;
+        });
+      }
+
+      // Merge Day, Date, and Day Note cells for all items in the same day
+      const dayEndRow = currentRow - 1;
+      if (dayEndRow > dayStartRow) {
+        worksheet.mergeCells(`A${dayStartRow}:A${dayEndRow}`); // Day
+        worksheet.mergeCells(`B${dayStartRow}:B${dayEndRow}`); // Date
+        worksheet.mergeCells(`C${dayStartRow}:C${dayEndRow}`); // Day Note
+
+        // Center align merged cells
+        ['A', 'B', 'C'].forEach((col) => {
+          const cell = worksheet.getCell(`${col}${dayStartRow}`);
+          cell.alignment = {
+            vertical: 'middle',
+            horizontal: 'center',
+            wrapText: true,
+          };
+        });
+      }
+    });
+
+    // Set column widths
+    worksheet.columns = [
+      { width: 6 }, // Day
+      { width: 12 }, // Date
+      { width: 20 }, // Day Note
+      { width: 7 }, // Item #
+      { width: 10 }, // Type
+      { width: 25 }, // Place/Activity Name
+      { width: 30 }, // Address
+      { width: 10 }, // Start Time
+      { width: 10 }, // End Time
+      { width: 12 }, // Duration
+      { width: 10 }, // Cost
+      { width: 15 }, // Estimated Cost
+      { width: 15 }, // Phone
+      { width: 25 }, // Item Note
+    ];
+
+    // Generate buffer
+    const buffer = await workbook.xlsx.writeBuffer();
+    return Buffer.from(buffer);
+  }
+
+  private escapeCsvField(field: string): string {
+    if (!field) return '';
+
+    // If field contains comma, quote, or newline, wrap in quotes and escape quotes
+    if (field.includes(',') || field.includes('"') || field.includes('\n')) {
+      return `"${field.replace(/"/g, '""')}"`;
+    }
+
+    return field;
   }
 
   private mapTripDays(tripDays: TripDay[]): TripDayDetailDto[] {
