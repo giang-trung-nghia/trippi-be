@@ -4,6 +4,7 @@ import { BaseEntity } from '@/modules/base/entities/base.entity';
 import { AuthProvider } from '@/modules/auth-providers/entities/auth-provider.entity';
 import { TripMember } from '@/modules/trip-members/entities/trip-member.entity';
 import { Trip } from '@/modules/trips/entities/trip.entity';
+import { ChecklistUser } from '@/modules/checklist-users/entities/checklist-user.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -33,4 +34,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => TripMember, (tripMember) => tripMember.user)
   tripMembers: TripMember[];
+
+  @OneToMany(() => ChecklistUser, (checklistUser) => checklistUser.user)
+  checklistUsers: ChecklistUser[];
 }

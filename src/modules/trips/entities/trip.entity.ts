@@ -4,6 +4,7 @@ import { TripMember } from '@/modules/trip-members/entities/trip-member.entity';
 import { TripDay } from '@/modules/trip-days/entities/trip-day.entity';
 import { TripStatus } from '@/common/enums/trip-status.enum';
 import { User } from '@/modules/users/entities/user.entity';
+import { ChecklistTrip } from '@/modules/checklist-trips/entities/checklist-trip.entity';
 
 @Entity('trips')
 export class Trip extends BaseEntity {
@@ -40,4 +41,7 @@ export class Trip extends BaseEntity {
 
   @OneToMany(() => TripDay, (tripDay) => tripDay.trip)
   days: TripDay[];
+
+  @OneToMany(() => ChecklistTrip, (checklistTrip) => checklistTrip.trip)
+  checklists: ChecklistTrip[];
 }

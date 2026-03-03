@@ -15,6 +15,12 @@ import { GeoPhotosModule } from '@/modules/geo-photos/geo-photos.module';
 import { AuthProvidersModule } from '@/modules/auth-providers/auth-providers.module';
 import { GoogleAuthModule } from '@/modules/auth/google/google-auth.module';
 import { AuthModule } from '@/modules/auth/auth.module';
+import { ChecklistTemplatesModule } from '@/modules/checklist-templates/checklist-templates.module';
+import { ChecklistTemplateItemsModule } from '@/modules/checklist-template-items/checklist-template-items.module';
+import { ChecklistUsersModule } from '@/modules/checklist-users/checklist-users.module';
+import { ChecklistUserItemsModule } from '@/modules/checklist-user-items/checklist-user-items.module';
+import { ChecklistTripsModule } from '@/modules/checklist-trips/checklist-trips.module';
+import { ChecklistTripItemsModule } from '@/modules/checklist-trip-items/checklist-trip-items.module';
 
 @Module({
   imports: [
@@ -35,6 +41,12 @@ import { AuthModule } from '@/modules/auth/auth.module';
     AuthProvidersModule,
     GoogleAuthModule,
     AuthModule,
+    ChecklistTemplatesModule,
+    ChecklistTemplateItemsModule,
+    ChecklistUsersModule,
+    ChecklistUserItemsModule,
+    ChecklistTripsModule,
+    ChecklistTripItemsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
