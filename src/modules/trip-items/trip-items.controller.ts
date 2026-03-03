@@ -1,7 +1,8 @@
-import { Controller } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { TripItem } from '@/modules/trip-items/entities/trip-item.entity';
 import { CreateTripItemDto } from '@/modules/trip-items/dtos/create-trip-item.dto';
 import { UpdateTripItemDto } from '@/modules/trip-items/dtos/update-trip-item.dto';
+import { ReorderTripItemDto } from '@/modules/trip-items/dtos/reorder-trip-item.dto';
 import { TripItemsService } from '@/modules/trip-items/trip-items.service';
 import { BaseController } from '@/modules/base/base.controller';
 
@@ -13,5 +14,10 @@ export class TripItemsController extends BaseController<
 > {
   constructor(protected readonly tripItemsService: TripItemsService) {
     super(tripItemsService);
+  }
+
+  @Post('reorder')
+  reorder(@Body() reorderDto: ReorderTripItemDto): Promise<TripItem[]> {
+    return this.tripItemsService.reorder(reorderDto);
   }
 }

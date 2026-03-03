@@ -1,9 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TripItem } from '@/modules/trip-items/entities/trip-item.entity';
 import { CreateTripItemDto } from '@/modules/trip-items/dtos/create-trip-item.dto';
 import { UpdateTripItemDto } from '@/modules/trip-items/dtos/update-trip-item.dto';
+import { ReorderTripItemDto } from '@/modules/trip-items/dtos/reorder-trip-item.dto';
 import { BaseService } from '@/modules/base/base.service';
 import { TripDay } from '@/modules/trip-days/entities/trip-day.entity';
 import { Geo } from '@/modules/geos/entities/geo.entity';
@@ -109,5 +114,44 @@ export class TripItemsService extends BaseService<
     }
 
     return geo;
+  }
+
+  async reorder(reorderDto: ReorderTripItemDto): Promise<TripItem[]> {
+    const { tripDayId, itemIds } = reorderDto;
+
+    await this.findTripDay(tripDayId);
+
+    const items = await this.tripItemRepository.find({
+      where: { tripDay: { id: tripDayId } },
+    });
+
+    const itemIdSet = new Set(items.map((item) => item.id));
+
+    for (const id of itemIds) {
+      if (!itemIdSet.has(id)) {
+        throw new BadRequestException(
+          `Trip item with ID ${id} does not belong to trip day ${tripDayId}`,
+        );
+      }
+    }
+
+    if (itemIds.length !== items.length) {
+      throw new BadRequestException(
+        `Item count mismatch. Expected ${items.length} items but received ${itemIds.length}`,
+      );
+    }
+
+    // Update the orderIndex for each item based on the new order
+    const updatedItems: TripItem[] = [];
+    for (let i = 0; i < itemIds.length; i++) {
+      const item = items.find((item) => item.id === itemIds[i]);
+      if (item) {
+        item.orderIndex = i;
+        const updated = await this.tripItemRepository.save(item);
+        updatedItems.push(updated);
+      }
+    }
+
+    return updatedItems;
   }
 }
