@@ -20,9 +20,9 @@ export class ChecklistTemplatesService extends BaseService<
     super(checklistTemplateRepository, 'ChecklistTemplate');
   }
 
-  async findByType(type: ChecklistType): Promise<ChecklistTemplate[]> {
+  async findAll(type?: ChecklistType): Promise<ChecklistTemplate[]> {
     return this.checklistTemplateRepository.find({
-      where: { type },
+      where: type ? { type } : {},
       order: this.defaultOrder,
       relations: ['items'],
     });

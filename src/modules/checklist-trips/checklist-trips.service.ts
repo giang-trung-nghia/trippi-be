@@ -5,10 +5,12 @@ import { ChecklistTrip } from '@/modules/checklist-trips/entities/checklist-trip
 import { CreateChecklistTripDto } from '@/modules/checklist-trips/dtos/create-checklist-trip.dto';
 import { UpdateChecklistTripDto } from '@/modules/checklist-trips/dtos/update-checklist-trip.dto';
 import { CopyFromUserChecklistDto } from '@/modules/checklist-trips/dtos/copy-from-user-checklist.dto';
+import { CopyFromTemplateDto } from '@/modules/checklist-trips/dtos/copy-from-template.dto';
 import { BaseService } from '@/modules/base/base.service';
 import { Trip } from '@/modules/trips/entities/trip.entity';
 import { ChecklistUser } from '@/modules/checklist-users/entities/checklist-user.entity';
 import { ChecklistTripItem } from '@/modules/checklist-trip-items/entities/checklist-trip-item.entity';
+import { ChecklistTemplate } from '@/modules/checklist-templates/entities/checklist-template.entity';
 
 @Injectable()
 export class ChecklistTripsService extends BaseService<
@@ -23,10 +25,21 @@ export class ChecklistTripsService extends BaseService<
     private readonly tripRepository: Repository<Trip>,
     @InjectRepository(ChecklistUser)
     private readonly checklistUserRepository: Repository<ChecklistUser>,
-    @InjectRepository(ChecklistTripItem)
-    private readonly checklistTripItemRepository: Repository<ChecklistTripItem>,
   ) {
     super(checklistTripRepository, 'ChecklistTrip');
+  }
+
+  findAll(tripId?: string, includeItems = false): Promise<ChecklistTrip[]> {
+    return this.checklistTripRepository.find({
+      where: tripId ? { trip: { id: tripId } } : {},
+      relations: includeItems ? ['items'] : [],
+      order: (includeItems
+        ? {
+            updatedAt: 'DESC',
+            items: { orderIndex: 'ASC' },
+          }
+        : this.defaultOrder) as never,
+    });
   }
 
   async create(createDto: CreateChecklistTripDto): Promise<ChecklistTrip> {
@@ -75,6 +88,51 @@ export class ChecklistTripsService extends BaseService<
       await manager.save(tripChecklist);
 
       const items = userChecklist.items.map((item) =>
+        manager.create(ChecklistTripItem, {
+          name: item.name,
+          orderIndex: item.orderIndex,
+          checklistTrip: tripChecklist,
+          isChecked: false,
+        }),
+      );
+      await manager.save(items);
+
+      return manager.findOne(ChecklistTrip, {
+        where: { id: tripChecklist.id },
+        relations: ['items'],
+      }) as Promise<ChecklistTrip>;
+    });
+  }
+
+  /**
+   * Copy a checklist template directly to a trip (no user checklist in between).
+   */
+  async copyFromTemplate(copyDto: CopyFromTemplateDto): Promise<ChecklistTrip> {
+    return this.checklistTripRepository.manager.transaction(async (manager) => {
+      const template = await manager.findOne(ChecklistTemplate, {
+        where: { id: copyDto.templateId },
+        relations: ['items'],
+      });
+
+      if (!template) {
+        throw new NotFoundException('Checklist template not found');
+      }
+
+      const trip = await manager.findOne(Trip, {
+        where: { id: copyDto.tripId },
+      });
+
+      if (!trip) {
+        throw new NotFoundException('Trip not found');
+      }
+
+      const tripChecklist = manager.create(ChecklistTrip, {
+        name: template.name,
+        trip,
+      });
+      await manager.save(tripChecklist);
+
+      const items = (template.items ?? []).map((item) =>
         manager.create(ChecklistTripItem, {
           name: item.name,
           orderIndex: item.orderIndex,

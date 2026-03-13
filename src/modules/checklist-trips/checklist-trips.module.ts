@@ -4,6 +4,7 @@ import { ChecklistTrip } from '@/modules/checklist-trips/entities/checklist-trip
 import { Trip } from '@/modules/trips/entities/trip.entity';
 import { ChecklistUser } from '@/modules/checklist-users/entities/checklist-user.entity';
 import { ChecklistTripItem } from '@/modules/checklist-trip-items/entities/checklist-trip-item.entity';
+import { ChecklistTemplate } from '@/modules/checklist-templates/entities/checklist-template.entity';
 import { ChecklistTripsService } from '@/modules/checklist-trips/checklist-trips.service';
 import { ChecklistTripsController } from '@/modules/checklist-trips/checklist-trips.controller';
 
@@ -14,6 +15,7 @@ import { ChecklistTripsController } from '@/modules/checklist-trips/checklist-tr
       Trip,
       ChecklistUser,
       ChecklistTripItem,
+      ChecklistTemplate,
     ]),
   ],
   controllers: [ChecklistTripsController],
