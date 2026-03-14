@@ -5,7 +5,7 @@ import { ChecklistTrip } from '@/modules/checklist-trips/entities/checklist-trip
 import { CreateChecklistTripDto } from '@/modules/checklist-trips/dtos/create-checklist-trip.dto';
 import { UpdateChecklistTripDto } from '@/modules/checklist-trips/dtos/update-checklist-trip.dto';
 import { CopyFromUserChecklistDto } from '@/modules/checklist-trips/dtos/copy-from-user-checklist.dto';
-import { CopyFromTemplateDto } from '@/modules/checklist-trips/dtos/copy-from-template.dto';
+import { TripCopyChecklistFromTemplateDto } from '@/modules/checklist-trips/dtos/copy-from-template.dto';
 import { BaseService } from '@/modules/base/base.service';
 import { Trip } from '@/modules/trips/entities/trip.entity';
 import { ChecklistUser } from '@/modules/checklist-users/entities/checklist-user.entity';
@@ -107,7 +107,7 @@ export class ChecklistTripsService extends BaseService<
   /**
    * Copy a checklist template directly to a trip (no user checklist in between).
    */
-  async copyFromTemplate(copyDto: CopyFromTemplateDto): Promise<ChecklistTrip> {
+  async copyFromTemplate(copyDto: TripCopyChecklistFromTemplateDto): Promise<ChecklistTrip> {
     return this.checklistTripRepository.manager.transaction(async (manager) => {
       const template = await manager.findOne(ChecklistTemplate, {
         where: { id: copyDto.templateId },

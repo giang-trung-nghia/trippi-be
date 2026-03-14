@@ -4,7 +4,7 @@ import { ChecklistTrip } from '@/modules/checklist-trips/entities/checklist-trip
 import { CreateChecklistTripDto } from '@/modules/checklist-trips/dtos/create-checklist-trip.dto';
 import { UpdateChecklistTripDto } from '@/modules/checklist-trips/dtos/update-checklist-trip.dto';
 import { CopyFromUserChecklistDto } from '@/modules/checklist-trips/dtos/copy-from-user-checklist.dto';
-import { CopyFromTemplateDto } from '@/modules/checklist-trips/dtos/copy-from-template.dto';
+import { TripCopyChecklistFromTemplateDto } from '@/modules/checklist-trips/dtos/copy-from-template.dto';
 import { FilterChecklistTripsDto } from '@/modules/checklist-trips/dtos/filter-checklist-trips.dto';
 import { ChecklistTripsService } from '@/modules/checklist-trips/checklist-trips.service';
 import { BaseController } from '@/modules/base/base.controller';
@@ -30,7 +30,7 @@ export class ChecklistTripsController extends BaseController<
 
   @Post('copy-from-template')
   copyFromTemplate(
-    @Body() copyDto: CopyFromTemplateDto,
+    @Body() copyDto: TripCopyChecklistFromTemplateDto,
   ): Promise<ChecklistTrip> {
     return this.checklistTripsService.copyFromTemplate(copyDto);
   }

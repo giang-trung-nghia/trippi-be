@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { ChecklistUser } from '@/modules/checklist-users/entities/checklist-user.entity';
 import { CreateChecklistUserDto } from '@/modules/checklist-users/dtos/create-checklist-user.dto';
 import { UpdateChecklistUserDto } from '@/modules/checklist-users/dtos/update-checklist-user.dto';
-import { CopyFromTemplateDto } from '@/modules/checklist-users/dtos/copy-from-template.dto';
+import { UserCopyChecklistFromTemplateDto } from '@/modules/checklist-users/dtos/copy-from-template.dto';
 import { BaseService } from '@/modules/base/base.service';
 import { User } from '@/modules/users/entities/user.entity';
 import { ChecklistTemplate } from '@/modules/checklist-templates/entities/checklist-template.entity';
@@ -44,7 +44,7 @@ export class ChecklistUsersService extends BaseService<
     return super.create(payload as unknown as CreateChecklistUserDto);
   }
 
-  async copyFromTemplate(copyDto: CopyFromTemplateDto): Promise<ChecklistUser> {
+  async copyFromTemplate(copyDto: UserCopyChecklistFromTemplateDto): Promise<ChecklistUser> {
     return this.checklistUserRepository.manager.transaction(async (manager) => {
       const template = await manager.findOne(ChecklistTemplate, {
         where: { id: copyDto.templateId },

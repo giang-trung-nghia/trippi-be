@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsUUID } from 'class-validator';
 
-export class CopyFromTemplateDto {
+export class UserCopyChecklistFromTemplateDto {
   @ApiProperty({ description: 'ID of the user' })
   @IsUUID()
   @IsNotEmpty()
