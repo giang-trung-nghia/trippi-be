@@ -5,7 +5,7 @@ import { CreateGeoPhotoDto } from '@/modules/geo-photos/dtos/create-geo-photo.dt
 import { UpdateGeoPhotoDto } from '@/modules/geo-photos/dtos/update-geo-photo.dto';
 import { GeoPhotosService } from '@/modules/geo-photos/geo-photos.service';
 
-@Controller('api/geo-photos')
+@Controller('v1/geo-photos')
 export class GeoPhotosController extends BaseController<
   GeoPhoto,
   CreateGeoPhotoDto,

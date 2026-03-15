@@ -8,7 +8,7 @@ import { ChecklistUserItemsService } from '@/modules/checklist-user-items/checkl
 import { BaseController } from '@/modules/base/base.controller';
 
 @ApiTags('User Checklist Items')
-@Controller('api/checklist-user-items')
+@Controller('v1/checklist-user-items')
 export class ChecklistUserItemsController extends BaseController<
   ChecklistUserItem,
   CreateChecklistUserItemDto,

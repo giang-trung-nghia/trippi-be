@@ -5,7 +5,7 @@ import { UpdateTripMemberDto } from '@/modules/trip-members/dtos/update-trip-mem
 import { TripMembersService } from '@/modules/trip-members/trip-members.service';
 import { BaseController } from '@/modules/base/base.controller';
 
-@Controller('api/trip-members')
+@Controller('v1/trip-members')
 export class TripMembersController extends BaseController<
   TripMember,
   CreateTripMemberDto,

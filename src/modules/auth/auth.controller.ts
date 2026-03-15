@@ -19,7 +19,7 @@ type RefreshRequest = Omit<ExpressRequest, 'cookies'> & {
   cookies?: Record<string, string | undefined>;
 };
 
-@Controller('api/auth')
+@Controller('v1/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 

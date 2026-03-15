@@ -5,7 +5,7 @@ import { CreateGeoDto } from '@/modules/geos/dtos/create-geo.dto';
 import { UpdateGeoDto } from '@/modules/geos/dtos/update-geo.dto';
 import { GeoService } from '@/modules/geos/geo.service';
 
-@Controller('api/geo')
+@Controller('v1/geo')
 export class GeoController extends BaseController<
   Geo,
   CreateGeoDto,

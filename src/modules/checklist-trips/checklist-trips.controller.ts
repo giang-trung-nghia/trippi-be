@@ -10,7 +10,7 @@ import { ChecklistTripsService } from '@/modules/checklist-trips/checklist-trips
 import { BaseController } from '@/modules/base/base.controller';
 
 @ApiTags('Trip Checklists')
-@Controller('api/checklist-trips')
+@Controller('v1/checklist-trips')
 export class ChecklistTripsController extends BaseController<
   ChecklistTrip,
   CreateChecklistTripDto,

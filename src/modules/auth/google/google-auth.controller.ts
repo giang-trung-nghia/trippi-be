@@ -6,7 +6,7 @@ import { AuthService } from '@/modules/auth/auth.service';
 import { ConfigService } from '@nestjs/config';
 import type { Response } from 'express';
 
-@Controller('api/auth/google')
+@Controller('v1/auth/google')
 export class GoogleAuthController {
   constructor(
     private readonly googleAuthService: GoogleAuthService,
