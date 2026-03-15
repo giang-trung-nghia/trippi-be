@@ -9,7 +9,7 @@ import { TripsService } from '@/modules/trips/trips.service';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { formatDateTime } from '@/common/utils/datetime.util';
 
-@Controller('api/v1/trips')
+@Controller('api/trips')
 @UseGuards(JwtAuthGuard)
 export class TripsController extends BaseController<
   Trip,

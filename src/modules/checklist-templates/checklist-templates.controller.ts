@@ -8,7 +8,7 @@ import { ChecklistTemplatesService } from '@/modules/checklist-templates/checkli
 import { BaseController } from '@/modules/base/base.controller';
 
 @ApiTags('Checklist Templates')
-@Controller('api/v1/checklist-templates')
+@Controller('api/checklist-templates')
 export class ChecklistTemplatesController extends BaseController<
   ChecklistTemplate,
   CreateChecklistTemplateDto,

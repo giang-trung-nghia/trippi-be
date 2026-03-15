@@ -5,7 +5,7 @@ import { CreateGeoTypeDto } from '@/modules/geo-types/dtos/create-geo-type.dto';
 import { UpdateGeoTypeDto } from '@/modules/geo-types/dtos/update-geo-type.dto';
 import { GeoTypesService } from '@/modules/geo-types/geo-types.service';
 
-@Controller('api/v1/geo-types')
+@Controller('api/geo-types')
 export class GeoTypesController extends BaseController<
   GeoType,
   CreateGeoTypeDto,

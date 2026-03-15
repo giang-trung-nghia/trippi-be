@@ -5,7 +5,7 @@ import { UpdateTripDayDto } from '@/modules/trip-days/dtos/update-trip-day.dto';
 import { TripDaysService } from '@/modules/trip-days/trip-days.service';
 import { BaseController } from '@/modules/base/base.controller';
 
-@Controller('api/v1/trip-days')
+@Controller('api/trip-days')
 export class TripDaysController extends BaseController<
   TripDay,
   CreateTripDayDto,

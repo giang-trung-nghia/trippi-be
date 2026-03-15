@@ -6,7 +6,7 @@ import { ReorderTripItemDto } from '@/modules/trip-items/dtos/reorder-trip-item.
 import { TripItemsService } from '@/modules/trip-items/trip-items.service';
 import { BaseController } from '@/modules/base/base.controller';
 
-@Controller('api/v1/trip-items')
+@Controller('api/trip-items')
 export class TripItemsController extends BaseController<
   TripItem,
   CreateTripItemDto,

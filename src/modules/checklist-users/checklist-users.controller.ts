@@ -8,7 +8,7 @@ import { ChecklistUsersService } from '@/modules/checklist-users/checklist-users
 import { BaseController } from '@/modules/base/base.controller';
 
 @ApiTags('User Checklists')
-@Controller('api/v1/checklist-users')
+@Controller('api/checklist-users')
 export class ChecklistUsersController extends BaseController<
   ChecklistUser,
   CreateChecklistUserDto,

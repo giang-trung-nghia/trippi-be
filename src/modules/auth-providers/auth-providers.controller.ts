@@ -5,7 +5,7 @@ import { CreateAuthProviderDto } from '@/modules/auth-providers/dtos/create-auth
 import { UpdateAuthProviderDto } from '@/modules/auth-providers/dtos/update-auth-provider.dto';
 import { AuthProvidersService } from '@/modules/auth-providers/auth-providers.service';
 
-@Controller('api/v1/auth-providers')
+@Controller('api/auth-providers')
 export class AuthProvidersController extends BaseController<
   AuthProvider,
   CreateAuthProviderDto,

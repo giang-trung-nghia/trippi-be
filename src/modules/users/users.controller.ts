@@ -5,7 +5,7 @@ import { UpdateUserDto } from '@/modules/users/dtos/update-user.dto';
 import { BaseController } from '@/modules/base/base.controller';
 import { User } from '@/modules/users/entities/user.entity';
 
-@Controller('api/v1/users')
+@Controller('api/users')
 export class UsersController extends BaseController<
   User,
   CreateUserDto,
