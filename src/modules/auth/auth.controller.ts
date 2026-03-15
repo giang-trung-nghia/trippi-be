@@ -11,6 +11,9 @@ import type { Request as ExpressRequest, Response } from 'express';
 import { AuthService } from '@/modules/auth/auth.service';
 import { AuthSessionResponseDto } from '@/modules/auth/dtos/auth-session-response.dto';
 import { LogoutResponseDto } from '@/modules/auth/dtos/logout-response.dto';
+import { SignUpDto } from '@/modules/auth/dtos/sign-up.dto';
+import { SignInDto } from '@/modules/auth/dtos/sign-in.dto';
+import { SessionWithTokens } from '@/modules/auth/interfaces/session.interface';
 
 type RefreshRequest = Omit<ExpressRequest, 'cookies'> & {
   cookies?: Record<string, string | undefined>;
@@ -19,6 +22,35 @@ type RefreshRequest = Omit<ExpressRequest, 'cookies'> & {
 @Controller('api/v1/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @Post('sign-up')
+  async signUp(
+    @Body() dto: SignUpDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<AuthSessionResponseDto> {
+    const session: SessionWithTokens = await this.authService.signUp(dto);
+    this.authService.setRefreshTokenCookie(res, session.tokens.refreshToken);
+    return {
+      accessToken: session.tokens.accessToken,
+      user: session.user,
+    };
+  }
+
+  @Post('sign-in')
+  async signIn(
+    @Body() dto: SignInDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<AuthSessionResponseDto> {
+    const session: SessionWithTokens = await this.authService.signIn(
+      dto.email,
+      dto.password,
+    );
+    this.authService.setRefreshTokenCookie(res, session.tokens.refreshToken);
+    return {
+      accessToken: session.tokens.accessToken,
+      user: session.user,
+    };
+  }
 
   @Post('refresh')
   /**

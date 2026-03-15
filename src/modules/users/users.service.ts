@@ -51,6 +51,10 @@ export class UsersService extends BaseService<
     return user;
   }
 
+  async findByEmailOptional(email: string): Promise<User | null> {
+    return this.userRepository.findOne({ where: { email } });
+  }
+
   async update(id: string, updateDto: UpdateUserDto): Promise<User> {
     const dto: UpdateUserDto = { ...updateDto };
     if (dto.password) {

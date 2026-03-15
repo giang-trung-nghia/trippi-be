@@ -1,14 +1,21 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '@/modules/users/users.service';
 import { User } from '@/modules/users/entities/user.entity';
 import { Response, CookieOptions } from 'express';
+import * as bcrypt from 'bcrypt';
+import { UserRole } from '@/common/enums/user-role.enum';
 
 import { TokensResponse } from '@/modules/auth/interfaces/tokens-response.interface';
 import { TokenPayload } from '@/modules/auth/interfaces/token-payload.interface';
 import { SessionWithTokens } from '@/modules/auth/interfaces/session.interface';
 import { AuthUserResponseDto } from '@/modules/auth/dtos/auth-user-response.dto';
+import { SignUpDto } from '@/modules/auth/dtos/sign-up.dto';
 
 @Injectable()
 export class AuthService {
@@ -68,6 +75,35 @@ export class AuthService {
     return { user: this.toAuthUserResponse(user), tokens };
   }
 
+  async signUp(dto: SignUpDto): Promise<SessionWithTokens> {
+    const existing = await this.usersService.findByEmailOptional(dto.email);
+    if (existing) {
+      throw new ConflictException('Email already registered.');
+    }
+    const user = await this.usersService.create({
+      email: dto.email,
+      password: dto.password,
+      name: dto.name,
+      confirmPassword: dto.password,
+      role: UserRole.USER,
+    });
+    const tokens = await this.generateTokens(user);
+    return { user: this.toAuthUserResponse(user), tokens };
+  }
+
+  async signIn(email: string, password: string): Promise<SessionWithTokens> {
+    const user = await this.usersService.findByEmailOptional(email);
+    if (!user?.password) {
+      throw new UnauthorizedException('Invalid email or password.');
+    }
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      throw new UnauthorizedException('Invalid email or password.');
+    }
+    const tokens = await this.generateTokens(user);
+    return { user: this.toAuthUserResponse(user), tokens };
+  }
+
   setRefreshTokenCookie(res: Response, refreshToken: string): void {
     res.cookie('refreshToken', refreshToken, this.getRefreshCookieOptions());
   }
@@ -97,6 +133,7 @@ export class AuthService {
         secret: refreshSecret,
       });
     } catch (error) {
+      console.error(error);
       throw new UnauthorizedException('Invalid refresh token');
     }
   }
